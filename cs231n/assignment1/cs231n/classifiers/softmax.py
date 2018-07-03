@@ -72,7 +72,20 @@ def softmax_loss_vectorized(W, X, y, reg):
   # here, it is easy to run into numeric instability. Don't forget the        #
   # regularization!                                                           #
   #############################################################################
-  pass
+  
+  num_train = X.shape[0]
+  scores = np.dot(X, W)
+  probabilities = np.exp(scores - np.max(scores, axis = 1)[:, np.newaxis]) / (np.sum(np.exp(scores - np.max(scores, axis = 1)[:,np.newaxis]), axis = 1)[:, np.newaxis])
+  
+  loss = np.sum(-np.log(probabilities[np.arange(probabilities.shape[0]), y]))
+  
+  loss /= num_train
+  loss += reg*np.sum(W*W)
+
+  probabilities[np.arange(probabilities.shape[0]), y] = -1*(1-probabilities[np.arange(probabilities.shape[0]), y])
+  dW = np.dot(X.T, probabilities)
+  dW /= num_train
+  dW += 2*reg*W  
   #############################################################################
   #                          END OF YOUR CODE                                 #
   #############################################################################
